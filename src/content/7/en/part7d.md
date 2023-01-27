@@ -396,7 +396,7 @@ var App = function App() {
 
 As we can see, variables are declared with the _var_ keyword as ES5 JavaScript does not understand the _const_ keyword. Arrow functions are also not used, which is why the function definition used the _function_ keyword.
 
-### CSS
+### CSS & SASS
 
 Let's add some CSS to our application. Let's create a new <i>src/index.css</i> file:
 
@@ -451,7 +451,7 @@ When using CSS, we have to use [css](https://webpack.js.org/loaders/css-loader/)
 }
 ```
 
-The job of the [css loader](https://webpack.js.org/loaders/css-loader/) is to load the <i>CSS</i> files and the job of the [style loader](https://webpack.js.org/loaders/style-loader/) is to generate and inject a <i>style</i> element that contains all of the styles of the application.
+The job of the [css loader](https://webpack.js.org/loaders/css-loader/) is to load the <i>CSS</i> files and the job of the [style loader](https://webpack.js.org/loaders/style-loader/) is to generate and inject a <i>style</i> element that contains all of the styles of the application. It is really inportant that we put them exactly in the order wrote above. The webpack reads this line of file, it reads it from right to left. So it will use css-loader first(which loads the CSS files), and then style-loader(which reads from the styles loaded from css-loader). Order matters
 
 With this configuration, the CSS definitions are included in the <i>main.js</i> file of the application. For this reason, there is no need to separately import the <i>CSS</i> styles in the main <i>index.html</i> file of the application.
 
@@ -464,6 +464,46 @@ npm install style-loader css-loader --save-dev
 ```
 
 The bundling will succeed once again and the application gets new styles. 
+
+Working with sass and webpack is not different from what we say in the above lessons. we need to import. So to begin with, we have to import our sass files in our index.js file.
+
+```js
+import './index.scss'
+```
+
+We need one extra loader for our sass app in addition to our css and style loaders. install it using npm and also include it in our webpack configuration file.
+
+```js
+npm install sass-loader --save-dev
+```
+
+then in our webpack.config.js file, let us create another rule for sass files.
+
+```js
+{
+  rules: [
+    {
+      test: /\.js$/,
+      loader: 'babel-loader',
+      options: {
+        presets: ['@babel/preset-react', '@babel/preset-env'],
+      },
+    },
+    {
+      test: /\.css$/,
+      use: ['style-loader', 'css-loader'],
+    },
+    // highlight-start
+    {
+      test: /\.scss$/,
+      use: ['style-loader', 'css-loader', 'sass-loader'],
+    },
+    // highlight-end
+  ];
+}
+```
+
+Here also the order of our loaders matter. Our application should work as expected.
 
 ### Webpack-dev-server
 
@@ -502,6 +542,8 @@ const config = {
     static: path.resolve(__dirname, 'build'),
     compress: true,
     port: 3000,
+    open: true,
+    hot: true,
   },
   // highlight-end
   // ...
